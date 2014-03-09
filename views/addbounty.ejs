@@ -1,0 +1,31 @@
+<% include header %>
+
+  <div class="container">
+    <h1>Add Bounty</h1>
+    <form method="post" action="/addbounty">
+      <div class="form-group">
+        <label for="">title</label>
+        <input id="" class="form-control" type="text" name="title" placeholder="title" />
+      </div>
+      <div class="form-group">
+        <label for="">reward</label>
+        <input id="" class="form-control" type="text" name="reward" placeholder="reward" />
+      </div>
+      <div class="form-group">
+        <label for="">due date</label>
+        <input id="" class="form-control" type="text" name="dueDate" placeholder="due date" />
+      </div>
+      <input class="btn btn-primary" type="submit" value="create bounty">
+    </form>
+    <hr />
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="visible-lg">large</div>
+    <div class="visible-md">medium</div>
+    <div class="visible-sm">small</div>
+    <div class="visible-xs">extra small</div>
+  </div>
+
+<% include footer %>
