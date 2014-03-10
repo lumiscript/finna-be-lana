@@ -9,6 +9,12 @@
   list-style-type: none;
 }
 
+.done-true {
+  text-decoration: line-through;
+  color: #ddd;
+}
+
+
 </style>
 
 
@@ -38,8 +44,11 @@
       <button class="clear-btn" ng-click="clearCompleted()">Clear completed</button>
 
 <hr />
+
+<input type="text" placeholder="search" ng-model="searchText">
+
 <ul>
-  <li class= 'asong' ng-repeat="song in songs.tracks"> 
+  <li class= 'asong' ng-repeat="song in songs.tracks | filter:searchText"> 
   <img width='150px' height="150px" src="{{song.thumbnail}}"/> <br> 
   {{ song.title}} <br> 
   {{ song.artist.name }}
@@ -93,6 +102,8 @@
             
             data = JSON.parse(data);   
             console.log(data);
+
+
          
 
             $scope.todos = [
