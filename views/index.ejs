@@ -17,18 +17,12 @@
 
 </style>
 
+<div class="container" ng-app="App" ng-controller="AppCtrl">
 
-<div class="container" ng-controller="TodoCtrl">
+<hr>
+  <p ng-repeat="alltodo in alltodos"> {{ alltodo }} </p>
+<hr>
     
-    </div> 
-
-
-  <div class="container" ng-app="App" ng-controller="AppCtrl">
-
-    <h1>{{songs.title}}</h1>
-    
-<hr />
-
   <h2>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h2>
       <ul>
         <li ng-repeat="todo in todos">
@@ -44,12 +38,14 @@
       <button class="clear-btn" ng-click="clearCompleted()">Clear completed</button>
 
 <hr />
+<h1>{{songs.title}}</h1>
+    
+<hr />
 
 <input type="text" placeholder="search" ng-model="searchText">
 
 <ul>
   <li class= 'asong' ng-repeat="song in songs.tracks | filter:searchText"> 
-  <img width='150px' height="150px" src="{{song.thumbnail}}"/> <br> 
   {{ song.title}} <br> 
   {{ song.artist.name }}
   </li>
@@ -84,24 +80,31 @@
 
 
 
-    app.controller("TodoCtrl", function($scope){
+
+    app.factory('TodoData', function($http){
+      
+        return $http.get('todo/all').then(function (response) {
+        if (response.data.error) {
+         return null;
+        } else {
+         console.log(response.data);
+         return response.data;
+        }
+      });
+    })
 
 
 
-           
+    app.controller("AppCtrl", function($scope, $http, TodoData) {
 
-    });
-
-
-
-    app.controller("AppCtrl", function($scope, $http) {
+        $scope.alltodos = TodoData;
       
         $http({ method: 'GET', url: '/cloudafrica' }).
             success(function (data, status, headers, config) {
             // ...
             
             data = JSON.parse(data);   
-            console.log(data);
+          
 
 
          
