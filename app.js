@@ -139,8 +139,7 @@ app.post('/todo', function(req, res) {
 
   //post to DB
   mongoInsertTodo(req.body);
-  mongoGetTodos();
-
+ 
     var postdetails = req.body;
     console.log(req.body);
     

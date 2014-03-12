@@ -20,7 +20,7 @@
 <div class="container" ng-app="App" ng-controller="AppCtrl">
 
 <hr>
-  <p ng-repeat="alltodo in alltodos"> {{ alltodo }} </p>
+  <p ng-repeat="alltodo in alltodos._id"> {{ alltodo }} </p>
 <hr>
     
   <h2>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h2>
@@ -33,8 +33,10 @@
       <form>
         <input class="add-input" placeholder="I need to..." type="text" ng-model="formTodoText" ng-model-instant />
         <button class="add-btn" ng-click="addTodo()">Add</button>
-        
+
       <button class="clear-btn" ng-click="clearCompleted()">Clear completed</button>
+      <button class="clear-btn" ng-click="alltodos()">Load</button>
+      
       </form>
       
 
@@ -49,6 +51,7 @@
   <li class= 'asong' ng-repeat="song in songs.tracks | filter:searchText"> 
   {{ song.title}} <br> 
   {{ song.artist.name }}
+  <img src="{{song.thumbnail}}" width="150px" height="150px" style='float:left;' />
   </li>
   
 </ul>
@@ -88,7 +91,12 @@
         if (response.data.error) {
          return null;
         } else {
-         console.log(response.data);
+         
+        for (i=0; i < response.data.length; i++) {
+         console.log(response.data[i].second);
+        }
+
+         //console.log(response.data);
          return response.data;
         }
       });
@@ -98,8 +106,33 @@
 
     app.controller("AppCtrl", function($scope, $http, TodoData) {
 
-        $scope.alltodos = TodoData;
+
+
+        $scope.alltodos = function() {
+            
+            $http.get('todo/all').then(function (response) {
+              if (response.data.error) {
+                  return null;
+                  } 
+              else {
+                for (i=0; i < response.data < length; i++) {
+
+                  console.log(response.data[i].second);
+
+                }
+                
+               
+                }
+          });
+
+        };
       
+  
+
+
+  
+
+
         $http({ method: 'GET', url: '/cloudafrica' }).
             success(function (data, status, headers, config) {
             // ...
