@@ -129,6 +129,13 @@
        return mylist;
 
       };
+
+      this.postTodoAsync = function(todoObject) {
+        $http.post('/todo', todoObject)
+            .success(function (data) {
+              console.log('app posted!');
+            });
+      };
 });
 
 
@@ -164,8 +171,13 @@
             };
 
 
+
             $scope.addTodo = function () {
             $scope.todos.push({text:$scope.formTodoText, done:false});
+            //post to DB
+            TodoData.postTodoAsync({second:$scope.formTodoText, done: false});
+            $scope.getTodoStuff.push({second:$scope.formTodoText, done: false});
+
             //clear the text box 
             $scope.formTodoText = '';
             };
