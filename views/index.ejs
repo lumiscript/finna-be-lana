@@ -20,7 +20,7 @@
 <div class="container" ng-app="App" ng-controller="AppCtrl">
 
 <hr>
-  <p ng-repeat="alltodo in alltodos._id"> {{ alltodo }} </p>
+ <li ng-repeat="oneTodo in getTodoStuff"> {{ oneTodo.second }} </li>
 <hr>
     
   <h2>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h2>
@@ -84,7 +84,7 @@
 
 
 
-
+/*
     app.factory('TodoData', function($http){
       
         return $http.get('todo/all').then(function (response) {
@@ -100,34 +100,45 @@
          return response.data;
         }
       });
-    })
+    }
 
+    */
+
+
+    app.service('TodoData', function($http) {
+
+      // Service definition
+        this.getTodoAsync = function(){
+          var mylist = [];
+           
+
+          
+          $http.get('todo/all').then(function (response) {
+          if (response.data.error) {
+           return null;
+          } else {
+           
+          for (i=0; i < response.data.length; i++) {
+           mylist.push(response.data[i]);
+           console.log(response.data[i].second);
+          }
+          
+        }
+        });        
+       
+       return mylist;
+
+      };
+});
 
 
     app.controller("AppCtrl", function($scope, $http, TodoData) {
 
 
-
-        $scope.alltodos = function() {
-            
-            $http.get('todo/all').then(function (response) {
-              if (response.data.error) {
-                  return null;
-                  } 
-              else {
-                for (i=0; i < response.data < length; i++) {
-
-                  console.log(response.data[i].second);
-
-                }
-                
-               
-                }
-          });
-
-        };
       
-  
+      $scope.getTodoStuff = TodoData.getTodoAsync();
+
+        
 
 
   
@@ -155,6 +166,7 @@
 
             $scope.addTodo = function () {
             $scope.todos.push({text:$scope.formTodoText, done:false});
+            //clear the text box 
             $scope.formTodoText = '';
             };
 
