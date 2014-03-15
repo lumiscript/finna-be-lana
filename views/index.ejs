@@ -1,5 +1,5 @@
 <% include header %>
-
+ <script src="javascripts/jquery.storageapi.js"> </script>
 <style>
 
 .asong {
@@ -20,7 +20,7 @@
 <div class="container" ng-app="App" ng-controller="AppCtrl">
 
 <hr>
- <li ng-repeat="oneTodo in getTodoStuff"> {{ oneTodo.second }} </li>
+ <li ng-repeat="oneTodo in getTodoStuff"> <input type="checkbox" ng-model="oneTodo.done"/> {{ oneTodo.second }} </li>
 <hr>
     
   <h2>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h2>
@@ -33,11 +33,22 @@
       <form>
         <input class="add-input" placeholder="I need to..." type="text" ng-model="formTodoText" ng-model-instant />
         <button class="add-btn" ng-click="addTodo()">Add</button>
+         
 
       <button class="clear-btn" ng-click="clearCompleted()">Clear completed</button>
       <button class="clear-btn" ng-click="alltodos()">Load</button>
       
       </form>
+
+<hr /> 
+
+<input type="text" ng-model='myusername' placeholder="update username">  
+ <button class="add-btn" ng-click="updateUsername(myusername)">Add</button>
+  <button class="add-btn" ng-click="checkLocalStorage()">Log userobject from LS</button>
+{{ myusername }}
+
+
+
       
 
 <hr />
@@ -59,7 +70,12 @@
 
   </div>
 
+<script>
 
+
+
+
+</script>
 
 
   
@@ -74,36 +90,8 @@
 
 
 
-    var app = angular.module('App', []);
-
-    app.filter("moment", function() {
-      return function(input) {
-        return moment(input).fromNow();
-      };
-    });
-
-
-
-/*
-    app.factory('TodoData', function($http){
-      
-        return $http.get('todo/all').then(function (response) {
-        if (response.data.error) {
-         return null;
-        } else {
-         
-        for (i=0; i < response.data.length; i++) {
-         console.log(response.data[i].second);
-        }
-
-         //console.log(response.data);
-         return response.data;
-        }
-      });
-    }
-
-    */
-
+var app = angular.module('App', []);
+    
 
     app.service('TodoData', function($http) {
 
@@ -140,6 +128,43 @@
 
 
     app.controller("AppCtrl", function($scope, $http, TodoData) {
+
+
+$scope.userprofile = {
+
+  'username': '',
+  'location': '',
+  'todos': [
+      {'todo': 'get ready!!', 'donestatus': false},
+      {'todo': 'get ready!!', 'donestatus': false}
+      ]
+};
+
+
+$scope.updateUsername = function(newName) {
+
+    console.log(newName);
+    $scope.userprofile.username = newName;
+    console.log($scope.userprofile.username);
+    localStorage.setItem('myobj', JSON.stringify($scope.userprofile));
+    console.log('This object has been save' + JSON.stringify($scope.userprofile) );
+    $scope.myusername = ''; 
+
+};
+
+$scope.checkLocalStorage = function() {
+
+    var myobjectin = localStorage.getItem('myobj');
+    console.log(JSON.parse(myobjectin));
+
+
+};
+
+
+
+
+
+
 
 
       
@@ -205,5 +230,6 @@
 
     });
   </script>
+
 
 <% include footer %>
