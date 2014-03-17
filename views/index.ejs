@@ -2,12 +2,6 @@
  <script src="javascripts/jquery.storageapi.js"> </script>
 <style>
 
-.asong {
-  float: left;
-  margin-right: 20px;
-  margin-bottom: 20px;
-  list-style-type: none;
-}
 
 .done-true {
   text-decoration: line-through;
@@ -19,19 +13,16 @@
 
 <div class="container" ng-app="App" ng-controller="AppCtrl">
 
-<hr>
- <li ng-repeat="oneTodo in getTodoStuff"> <input type="checkbox" ng-model="oneTodo.done"/> {{ oneTodo.second }} </li>
-<hr>
     
   <h2>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h2>
       <ul>
-        <li ng-repeat="todo in todos">
-          <input type="checkbox" ng-model="todo.done"/>
-          <span class="done-{{todo.done}}">{{todo.text}}</span>
+        <li ng-repeat="mytodo in userprofile.todos">
+          <input type="checkbox" ng-model="todo.done" ng-click="checkboxCheck(mytodo.id)"/>
+          <span class="done-{{ todo.done }}"> {{ mytodo.id }} -  {{mytodo.todo}}</span>
         </li>
       </ul>
       <form>
-        <input class="add-input" placeholder="I need to..." type="text" ng-model="formTodoText" ng-model-instant />
+        <input class="add-input" placeholder="I need to..." type="text" ng-model="formTodoText" />
         <button class="add-btn" ng-click="addTodo()">Add</button>
          
 
@@ -56,22 +47,37 @@
     
 <hr />
 
-<input type="text" placeholder="search" ng-model="searchText">
-
-<ul>
-  <li class= 'asong' ng-repeat="song in songs.tracks | filter:searchText"> 
-  {{ song.title}} <br> 
-  {{ song.artist.name }}
-  <img src="{{song.thumbnail}}" width="150px" height="150px" style='float:left;' />
-  </li>
-  
-</ul>
 
 
   </div>
 
 <script>
 
+var myArray = [
+
+{id: 1, todo: '1st todo', done: true},
+
+{id: 2, todo: '2nd false todo', done: false},
+
+];
+
+
+var searchItem = function(){
+
+var result = $.grep(myArray, function(e){ 
+
+  return e.todo.indexOf('2nd') == 0; 
+
+});
+
+
+//return e.code.indexOf('ENCH3TH') == 0;
+
+console.log(result);
+
+};
+
+searchItem();
 
 
 
@@ -92,42 +98,7 @@
 
 var app = angular.module('App', []);
     
-
-    app.service('TodoData', function($http) {
-
-      // Service definition
-        this.getTodoAsync = function(){
-          var mylist = [];
-           
-
-          
-          $http.get('todo/all').then(function (response) {
-          if (response.data.error) {
-           return null;
-          } else {
-           
-          for (i=0; i < response.data.length; i++) {
-           mylist.push(response.data[i]);
-           console.log(response.data[i].second);
-          }
-          
-        }
-        });        
-       
-       return mylist;
-
-      };
-
-      this.postTodoAsync = function(todoObject) {
-        $http.post('/todo', todoObject)
-            .success(function (data) {
-              console.log('app posted!');
-            });
-      };
-});
-
-
-    app.controller("AppCtrl", function($scope, $http, TodoData) {
+app.controller("AppCtrl", function($scope) {
 
 
 $scope.userprofile = {
@@ -135,8 +106,9 @@ $scope.userprofile = {
   'username': '',
   'location': '',
   'todos': [
-      {'todo': 'get ready!!', 'donestatus': false},
-      {'todo': 'get ready!!', 'donestatus': false}
+      {id: 1, todo: 'get ready!!', done: false},
+      {id: 2, todo: 'get ready 2!!', done: false},
+      {id: 3, todo: 'get ready 3!!', done: false}
       ]
 };
 
@@ -153,82 +125,82 @@ $scope.updateUsername = function(newName) {
 };
 
 $scope.checkLocalStorage = function() {
-
+    //Function to log userobject from localstorage
     var myobjectin = localStorage.getItem('myobj');
     console.log(JSON.parse(myobjectin));
+
+    console.log($scope.userprofile);
+
+
+};
+
+$scope.getTotalTodos = function () {
+      return $scope.userprofile.todos.length;
+};
+
+
+
+$scope.addTodo = function () {
+
+$scope.userprofile.todos.push({todo:$scope.formTodoText, done:false});
+localStorage.setItem('myobj', JSON.stringify($scope.userprofile));
+
+//clear the text box 
+$scope.formTodoText = '';
+};
+
+$scope.clearCompleted = function () {
+$scope.userprofile.todos = _.filter($scope.userprofile.todos, function(todo){
+return !todo.done;
+});
+};  
+
+$scope.clearAll =function() {
+
+
+
+};  
+
+$scope.checkboxCheck = function(todoID) {
+
+  //console.log(todoID);
+  console.log($scope.userprofile.todos.length + 'array items..')
+
+
+//remove array 
+  function removeItem(array, item){
+    for(var i in array){
+        if(array[i].id == item){
+            array.splice(i,1);
+            break;
+            }
+    }
+}
+
+removeItem($scope.userprofile.todos, todoID)
+
+
 
 
 };
 
 
 
+function removeItem(array, item){
+    for(var i in array){
+        if(array[i]==item){
+            array.splice(i,1);
+            break;
+            }
+    }
+}
 
 
 
-
-
-      
-      $scope.getTodoStuff = TodoData.getTodoAsync();
-
-        
-
-
-  
-
-
-        $http({ method: 'GET', url: '/cloudafrica' }).
-            success(function (data, status, headers, config) {
-            // ...
-            
-            data = JSON.parse(data);   
-          
-
-
-         
-
-            $scope.todos = [
-            {text:'Learn AngularJS', done:false},         
-            {text: 'Build an app', done:false}
-            ];
-
-            $scope.getTotalTodos = function () {
-            return $scope.todos.length;
-            };
-
-
-
-            $scope.addTodo = function () {
-            $scope.todos.push({text:$scope.formTodoText, done:false});
-            //post to DB
-            TodoData.postTodoAsync({second:$scope.formTodoText, done: false});
-            $scope.getTodoStuff.push({second:$scope.formTodoText, done: false});
-
-            //clear the text box 
-            $scope.formTodoText = '';
-            };
-
-            $scope.clearCompleted = function () {
-            $scope.todos = _.filter($scope.todos, function(todo){
-            return !todo.done;
-            });
-          };     
-
-            $scope.songs = {"number_of_plays": 35966, "tracks_order": "2476,2612,2618,2576,2483,2704,2504,2436,2653,2337", "owner": {"name": "Admin"}, "slug": "cloudafrica", "id": 1, "title": "Weekly Top10", "created_at": "2013-03-07T06:00:00Z", "tracks": [{"id": 2476, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/wiz.jpg", "title": "Single - Eledumare", "slug": ""}, "title": "Eledumare ", "plays": 26578, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/wiz.jpg", "url": "Eledumare .mp3", "is_external": false, "slug": "qNDiKx", "artist": {"name": "Wizkid", "slug": "wizkid"}}, {"id": 2612, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/spinall.jpg", "title": "Gba Gbe e ft Burna Boy", "slug": "gba-gbe-e-ft-burna-boy"}, "title": "Gba Gbe e ft Burna Boy", "plays": 13324, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/spinall.jpg", "url": "gbagbee.mp3", "is_external": false, "slug": "WA0Rba", "artist": {"name": "DJ Spinall", "slug": ""}}, {"id": 2618, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/Davido-AYE-Art.jpeg", "title": "Single", "slug": ""}, "title": "Aye", "plays": 21102, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/Davido-AYE-Art.jpeg", "url": "Aye.mp3", "is_external": false, "slug": "i2a7qC", "artist": {"name": "Davido", "slug": "davido"}}, {"id": 2576, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/Tekno-Dance-Art.jpg", "title": "Single", "slug": ""}, "title": "Dance", "plays": 10817, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/Tekno-Dance-Art.jpg", "url": "Dance (Prod. E Kelly).mp3", "is_external": false, "slug": "bZHYBb", "artist": {"name": "Tekno", "slug": "tekno"}}, {"id": 2483, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/siduction-art1.jpg", "title": "Siduction", "slug": ""}, "title": "Oyari ft Tiwa Savage", "plays": 23068, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/siduction-art1.jpg", "url": "Oyari ft Tiwa Savage.mp3", "is_external": false, "slug": "TGuqWk", "artist": {"name": "Dr. SID", "slug": "dr-sid"}}, {"id": 2704, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/saeon.jpg", "title": "Single", "slug": ""}, "title": "Boogie Down ft Wizkid", "plays": 5835, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/saeon.jpg", "url": "Boogie Down ft Wizkid.mp3", "is_external": false, "slug": "NRzZgt", "artist": {"name": "Saeon", "slug": "saeon"}}, {"id": 2504, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/iya.jpg", "title": "Single", "slug": ""}, "title": "Away", "plays": 23790, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/iya.jpg", "url": "http://www.gidilounge.com/wp-content/uploads/2014/01/Away.mp3", "is_external": true, "slug": "2uKIIP", "artist": {"name": "Iyanya", "slug": "iyanya"}}, {"id": 2436, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/Burna-Boy-V-1710x1280.jpg", "title": "Won Da Mo (Single)", "slug": "won-da-mo-single"}, "title": "Won Da Mo ft D'banj", "plays": 32655, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/Burna-Boy-V-1710x1280.jpg", "url": "Won Da Mo ft D'banj.mp3", "is_external": false, "slug": "l3OZqk", "artist": {"name": "Burna Boy", "slug": "burna-boy"}}, {"id": 2653, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/tpain.jpg", "title": "Single", "slug": ""}, "title": "If I Got It ft 2face, Akon", "plays": 7822, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/tpain.jpg", "url": "If I Got It ft 2face, Akon.mp3", "is_external": false, "slug": "W7O1aF", "artist": {"name": "T-Pain", "slug": ""}}, {"id": 2337, "album": {"thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/Dr-SID-Don-Jazzy-Surulere-Art.jpg", "title": "Siduction", "slug": "Siduction"}, "title": "Surulere ft Don Jazzy", "plays": 38806, "thumbnail": "http://southpawgroup.com/gidiloungeart/images/albums_thumbnail/Dr-SID-Don-Jazzy-Surulere-Art.jpg", "url": "Surulere ft Don Jazzy.mp3", "is_external": false, "slug": "TF3hBA", "artist": {"name": "Dr SID ", "slug": ""}}]};
-             
-
-            
-
-
-    
-            }).
-            error(function (data, status, headers, config) {
-            // ...
     
             });
 
 
-
-    });
   </script>
 
 
