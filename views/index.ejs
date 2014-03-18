@@ -14,22 +14,22 @@
 <div class="container" ng-app="App" ng-controller="AppCtrl">
 
     
-  <h2>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h2>
-      <ul>
-        <li ng-repeat="mytodo in userprofile.todos">
+  
+   
+      <form>
+        <input id= "addtodoinput" class="add-input" placeholder="I need to..." type="text" ng-model="formTodoText" />
+        <button class="add-btn" ng-click="addTodo()">Add</button>
+         
+      
+         <ul>
+        <li ng-repeat="mytodo in userprofile.todos track by $index">
           <input type="checkbox" ng-model="todo.done" ng-click="checkboxCheck(mytodo.id)"/>
           <span class="done-{{ todo.done }}"> {{ mytodo.id }} -  {{mytodo.todo}}</span>
         </li>
       </ul>
-      <form>
-        <input class="add-input" placeholder="I need to..." type="text" ng-model="formTodoText" />
-        <button class="add-btn" ng-click="addTodo()">Add</button>
-         
-
-      <button class="clear-btn" ng-click="clearCompleted()">Clear completed</button>
-      <button class="clear-btn" ng-click="alltodos()">Load</button>
-      
       </form>
+
+      <h4>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h4>
 
 <hr /> 
 
@@ -53,33 +53,6 @@
 
 <script>
 
-var myArray = [
-
-{id: 1, todo: '1st todo', done: true},
-
-{id: 2, todo: '2nd false todo', done: false},
-
-];
-
-
-var searchItem = function(){
-
-var result = $.grep(myArray, function(e){ 
-
-  return e.todo.indexOf('2nd') == 0; 
-
-});
-
-
-//return e.code.indexOf('ENCH3TH') == 0;
-
-console.log(result);
-
-};
-
-searchItem();
-
-
 
 </script>
 
@@ -88,30 +61,19 @@ searchItem();
 
 <!-- Controllers -->
   <script>
-
-
- var socket = io.connect('http://localhost:3000');
-
-
-
-
+var socket = io.connect('http://localhost:3000');
 
 var app = angular.module('App', []);
-    
 app.controller("AppCtrl", function($scope) {
+
 
 
 $scope.userprofile = {
 
   'username': '',
   'location': '',
-  'todos': [
-      {id: 1, todo: 'get ready!!', done: false},
-      {id: 2, todo: 'get ready 2!!', done: false},
-      {id: 3, todo: 'get ready 3!!', done: false}
-      ]
+  'todos': []
 };
-
 
 $scope.updateUsername = function(newName) {
 
@@ -126,23 +88,45 @@ $scope.updateUsername = function(newName) {
 
 $scope.checkLocalStorage = function() {
     //Function to log userobject from localstorage
-    var myobjectin = localStorage.getItem('myobj');
-    console.log(JSON.parse(myobjectin));
+    var myobjectin = JSON.parse(localStorage.getItem('myobj'));
+    
+    console.log(myobjectin.todos[2]);
+    $scope.userprofile = myobjectin
 
-    console.log($scope.userprofile);
 
 
 };
+//Sync todo list with localstorage on load
+$scope.checkLocalStorage();
+
 
 $scope.getTotalTodos = function () {
-      return $scope.userprofile.todos.length;
+      var obj = $scope.userprofile.todos.length;
+      return JSON.parse(obj);
 };
 
+//console.log($scope.checkLocalStorage());
 
+/*
+$scope.plusOne = function {
+  var myobjectin = localStorage.getItem('numberOfTodos');
+  return myobjectin;
+}
+
+*/
 
 $scope.addTodo = function () {
 
-$scope.userprofile.todos.push({todo:$scope.formTodoText, done:false});
+localStorage.setItem('myobj', JSON.stringify($scope.userprofile));
+console.log('saved to localstorage');
+
+console.log($scope.userprofile.todos.length + 1);
+
+localStorage.setItem('numberOfTodos', JSON.stringify($scope.userprofile.todos.length));
+
+var newCount = JSON.parse(localStorage.getItem('numberOfTodos'));
+
+$scope.userprofile.todos.push( {id:newCount + 1, todo:$scope.formTodoText, done:false});
 localStorage.setItem('myobj', JSON.stringify($scope.userprofile));
 
 //clear the text box 
@@ -155,46 +139,29 @@ return !todo.done;
 });
 };  
 
-$scope.clearAll =function() {
 
-
-
-};  
 
 $scope.checkboxCheck = function(todoID) {
 
   //console.log(todoID);
-  console.log($scope.userprofile.todos.length + 'array items..')
+  console.log($scope.userprofile.todos.length +' array items..')
 
 
-//remove array 
-  function removeItem(array, item){
-    for(var i in array){
-        if(array[i].id == item){
-            array.splice(i,1);
-            break;
-            }
-    }
-}
-
-removeItem($scope.userprofile.todos, todoID)
-
-
-
-
+//remove array based on todo ID
+function removeItem(array, item){
+  for(var i in array){
+      if(array[i].id == item){
+          array.splice(i,1);
+          break;
+          }
+  }
 };
 
+removeItem($scope.userprofile.todos, todoID);
 
+localStorage.setItem('myobj', JSON.stringify($scope.userprofile));
 
-function removeItem(array, item){
-    for(var i in array){
-        if(array[i]==item){
-            array.splice(i,1);
-            break;
-            }
-    }
-}
-
+};
 
 
     
