@@ -1,5 +1,5 @@
 <% include header %>
- <script src="javascripts/jquery.storageapi.js"> </script>
+
 <style>
 
 
@@ -8,6 +8,24 @@
   color: #ddd;
 }
 
+.closeTodo {
+  display: none;
+}
+
+.todoItem:hover .closeTodo {
+    display: inline-block;
+}
+
+.todoItem {
+  list-style: none;
+}
+
+
+.listul {
+  
+  padding-left: 0px;
+
+}
 
 </style>
 
@@ -15,21 +33,25 @@
 
     
   
-   
-      <form>
-        <input id= "addtodoinput" class="add-input" placeholder="I need to..." type="text" ng-model="formTodoText" />
-        <button class="add-btn" ng-click="addTodo()">Add</button>
-         
-      
-         <ul>
-        <li ng-repeat="mytodo in userprofile.todos track by $index">
-          <input type="checkbox" ng-model="todo.done" ng-click="checkboxCheck(mytodo.id)"/>
-          <span class="done-{{ todo.done }}"> {{ mytodo.id }} -  {{mytodo.todo}}</span>
-        </li>
-      </ul>
-      </form>
 
-      <h4>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h4>
+<form>
+
+<input id= "addtodoinput" class="add-input" placeholder="I need to..." type="text" ng-model="formTodoText" />
+
+<button type="button" class="btn btn-success btn-sm" ng-click="addTodo()">Add</button>
+ 
+
+ <ul class="listul">
+    <li ng-repeat="mytodo in userprofile.todos track by $index" class="todoItem">
+   
+    <span class="done-{{ todo.done }}"> {{mytodo.todo}}</span>
+    <span class="glyphicon glyphicon-remove-circle closeTodo" ng-click="checkboxCheck(mytodo.id)"></span>
+    </li>
+</ul>
+
+</form>
+
+      <h5>You've got <span class="emphasis">{{ getTotalTodos() }}</span> things to do</h5>
 
 <hr /> 
 
