@@ -42,20 +42,17 @@ var db = function() {
 
 
 
+
+
 server.listen(3000);
-io.set('log level', 1);
 
-io.sockets.on('connection', function(socket){
 
-   //send data to client
-    setInterval(function(){
-        socket.emit('date', {'date': new Date()});
-    }, 5000);
+io.sockets.on('connection', function(socket) {
 
-     //recieve client data
-	  socket.on('client_data', function(data){
-	    process.stdout.write(data.letter);
-	  });
+    setInterval(function () {
+    socket.emit('onNewDate', {'times': (new Date()).toString(), age: 30});
+  }, 1000);
+
 
 
 });
@@ -64,7 +61,6 @@ io.sockets.on('connection', function(socket){
 
 
 
-var bounties = [];
 
 // all environments
 app.set('port', process.env.PORT || 8080);

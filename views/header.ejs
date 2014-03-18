@@ -10,13 +10,15 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
 <script src="http://documentcloud.github.io/underscore/underscore-min.js"> </script>
+<script src="//cdn.jsdelivr.net/soundmanager2/2.97a.20131201/soundmanager2-jsmin.js"> </script>
 
 
 
 
   <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0" />
 </head>
-<body>
+<body ng-app="App" ng-controller="AppCtrl">
+<img id ="background" src="{{ randomBack }}" >
 
 <nav class="navbar navbar-inverse" role="navigation">
   <!-- Brand and toggle get grouped for better mobile display -->

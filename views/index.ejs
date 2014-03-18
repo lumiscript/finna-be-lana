@@ -24,15 +24,31 @@
 .listul {
   
   padding-left: 0px;
-
 }
 
+#background {
+  background-size: cover;
+  position: absolute;
+  z-index: 1;
+}
+
+
+.container {
+  z-index: 2; 
+}
 </style>
 
-<div class="container" ng-app="App" ng-controller="AppCtrl">
+
+
+<div class="container" >
+
 
     
-  
+<h4> Hello, {{ userprofile.username }} </h4>
+
+<h4> {{serverTime}} </h4>
+
+<h4> {{ randomBack }} </h4>
 
 <form>
 
@@ -61,9 +77,6 @@
 {{ myusername }}
 
 
-
-      
-
 <hr />
 <h1>{{songs.title}}</h1>
     
@@ -76,6 +89,32 @@
 <script>
 
 
+soundManager.setup({
+
+    // where to find the SWF files, if needed
+    url: '/path/to/swf-directory/',
+
+    onready: function() {
+      // SM2 has loaded, API ready to use e.g., createSound() etc.
+
+    var mySound = soundManager.createSound({
+    url: 'http://www.southpawgroup.com/gidimusicplayer/gidimusic/newplayer/songs/Various/Johnny.mp3'
+    });
+    
+
+
+    },
+
+    ontimeout: function() {
+      // Uh-oh. No HTML5 support, SWF missing, Flash blocked or other issue
+    }
+
+});
+
+
+
+
+
 </script>
 
 
@@ -83,11 +122,30 @@
 
 <!-- Controllers -->
   <script>
-var socket = io.connect('http://localhost:3000');
+
 
 var app = angular.module('App', []);
-app.controller("AppCtrl", function($scope) {
+app.controller("AppCtrl", function($scope, $http) {
 
+var socket = io.connect();
+
+socket.on('onNewDate', function(data){
+
+  $scope.serverTime = data.times;
+  $scope.$apply();
+  //console.log(data.times);
+});
+
+/*
+$scope.backgrounds = ['http://southpawgroup.com/bk/1.jpg',
+                    'http://southpawgroup.com/bk/2.jpg',
+                    'http://southpawgroup.com/bk/3.jpg',
+                    'http://southpawgroup.com/bk/4.jpg'
+];
+*/
+
+
+//$scope.randomBack = $scope.backgrounds[Math.floor(Math.random()*$scope.backgrounds.length)];
 
 
 $scope.userprofile = {
@@ -96,6 +154,8 @@ $scope.userprofile = {
   'location': '',
   'todos': []
 };
+
+
 
 $scope.updateUsername = function(newName) {
 
@@ -111,13 +171,9 @@ $scope.updateUsername = function(newName) {
 $scope.checkLocalStorage = function() {
     //Function to log userobject from localstorage
     var myobjectin = JSON.parse(localStorage.getItem('myobj'));
-    
-    console.log(myobjectin.todos[2]);
     $scope.userprofile = myobjectin
-
-
-
 };
+
 //Sync todo list with localstorage on load
 $scope.checkLocalStorage();
 

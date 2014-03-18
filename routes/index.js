@@ -8,7 +8,7 @@ exports.index = function(req, res){
 
   request('http://gplayer.herokuapp.com/api/playlist/cloudafrica', function(error, response, body) {
 
-  	console.log(body);
+  	//console.log(body);
 
   });
 
