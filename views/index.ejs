@@ -74,7 +74,9 @@
 <input type="text" ng-model='myusername' placeholder="update username">  
  <button class="add-btn" ng-click="updateUsername(myusername)">Add</button>
   <button class="add-btn" ng-click="checkLocalStorage()">Log userobject from LS</button>
-{{ myusername }}
+
+    <button class="add-btn" ng-click="emitData()">Emit</button>
+
 
 
 <hr />
@@ -89,27 +91,6 @@
 <script>
 
 
-soundManager.setup({
-
-    // where to find the SWF files, if needed
-    url: '/path/to/swf-directory/',
-
-    onready: function() {
-      // SM2 has loaded, API ready to use e.g., createSound() etc.
-
-    var mySound = soundManager.createSound({
-    url: 'http://www.southpawgroup.com/gidimusicplayer/gidimusic/newplayer/songs/Various/Johnny.mp3'
-    });
-    
-
-
-    },
-
-    ontimeout: function() {
-      // Uh-oh. No HTML5 support, SWF missing, Flash blocked or other issue
-    }
-
-});
 
 
 
@@ -127,7 +108,42 @@ soundManager.setup({
 var app = angular.module('App', []);
 app.controller("AppCtrl", function($scope, $http) {
 
-var socket = io.connect();
+
+soundManager.setup({
+
+    // where to find the SWF files, if needed
+    url: '/path/to/swf-directory/',
+
+    onready: function() {
+      // SM2 has loaded, API ready to use e.g., createSound() etc.
+
+
+   
+    var mySound = soundManager.createSound({
+        url: 'http://www.southpawgroup.com/gidimusicplayer/gidimusic/newplayer/songs/Various/Johnny.mp3'
+    });
+  
+        $scope.emitData = function() {
+
+          socket.emit('soundManagerReady', {ready: 'toblast'});
+   
+
+        console.log('emitted!!!');
+        mySound.play();
+      };
+
+ 
+
+    },
+
+    ontimeout: function() {
+      // Uh-oh. No HTML5 support, SWF missing, Flash blocked or other issue
+    }
+
+});
+
+
+var socket = io.connect('http://localhost:3000');
 
 socket.on('onNewDate', function(data){
 
@@ -154,7 +170,6 @@ $scope.userprofile = {
   'location': '',
   'todos': []
 };
-
 
 
 $scope.updateUsername = function(newName) {

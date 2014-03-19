@@ -51,8 +51,14 @@ io.sockets.on('connection', function(socket) {
 
     setInterval(function () {
     socket.emit('onNewDate', {'times': (new Date()).toString(), age: 30});
-  }, 1000);
+  }, 9000);
 
+
+socket.on('soundManagerReady', function(data){
+
+console.log('emit received from client!!!!');
+
+});
 
 
 });
